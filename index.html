@@ -14,9 +14,9 @@
         }
         
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #181818;
+            --bg-tertiary: #222222;
             --accent-primary: #00ff88;
             --accent-secondary: #0080ff;
             --text-primary: #ffffff;
@@ -41,7 +41,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.1;
+            opacity: 0.25;
         }
         
         .grid {
@@ -53,6 +53,103 @@
                 linear-gradient(90deg, rgba(0,255,136,0.1) 1px, transparent 1px);
             background-size: 50px 50px;
             animation: gridMove 20s linear infinite;
+        }
+        
+        /* Tesseract 4D Cube */
+        .tesseract-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            perspective: 800px;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .tesseract {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotateTesseract 25s linear infinite;
+        }
+        
+        .cube-outer, .cube-inner {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            transform-style: preserve-3d;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .cube-inner {
+            width: 240px;
+            height: 240px;
+            animation: rotateInner 18s linear infinite reverse;
+        }
+        
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(0, 255, 136, 0.4);
+            background: rgba(0, 128, 255, 0.05);
+            backdrop-filter: blur(1px);
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 136, 0.1),
+                0 0 30px rgba(0, 255, 136, 0.15);
+        }
+        
+        .face-front { transform: rotateY(0deg) translateZ(200px); }
+        .face-back { transform: rotateY(180deg) translateZ(200px); }
+        .face-right { transform: rotateY(90deg) translateZ(200px); }
+        .face-left { transform: rotateY(-90deg) translateZ(200px); }
+        .face-top { transform: rotateX(90deg) translateZ(200px); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(200px); }
+        
+        .face-inner-front { transform: rotateY(0deg) translateZ(120px); }
+        .face-inner-back { transform: rotateY(180deg) translateZ(120px); }
+        .face-inner-right { transform: rotateY(90deg) translateZ(120px); }
+        .face-inner-left { transform: rotateY(-90deg) translateZ(120px); }
+        .face-inner-top { transform: rotateX(90deg) translateZ(120px); }
+        .face-inner-bottom { transform: rotateX(-90deg) translateZ(120px); }
+        
+        .connector {
+            position: absolute;
+            width: 3px;
+            height: 160px;
+            background: linear-gradient(
+                rgba(0, 255, 136, 0.6), 
+                rgba(0, 128, 255, 0.4),
+                rgba(0, 255, 136, 0.6)
+            );
+            transform-origin: bottom;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            border-radius: 2px;
+        }
+        
+        .connector-1 { top: 0; left: 0; transform: rotateX(45deg) rotateY(45deg); }
+        .connector-2 { top: 0; right: 0; transform: rotateX(45deg) rotateY(-45deg); }
+        .connector-3 { bottom: 0; left: 0; transform: rotateX(-45deg) rotateY(45deg); }
+        .connector-4 { bottom: 0; right: 0; transform: rotateX(-45deg) rotateY(-45deg); }
+        .connector-5 { top: 50%; left: 0; transform: rotateY(90deg); }
+        .connector-6 { top: 50%; right: 0; transform: rotateY(-90deg); }
+        .connector-7 { top: 0; left: 50%; transform: rotateX(90deg); }
+        .connector-8 { bottom: 0; left: 50%; transform: rotateX(-90deg); }
+        
+        @keyframes rotateTesseract {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            25% { transform: rotateX(90deg) rotateY(90deg) rotateZ(90deg); }
+            50% { transform: rotateX(180deg) rotateY(180deg) rotateZ(180deg); }
+            75% { transform: rotateX(270deg) rotateY(270deg) rotateZ(270deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+        
+        @keyframes rotateInner {
+            0% { transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: translate(-50%, -50%) rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
         }
         
         @keyframes gridMove {
@@ -379,10 +476,31 @@
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 700;
             margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.15em;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.5),
+                0 0 20px rgba(255, 255, 255, 0.3),
+                0 0 30px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .hero h1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
         }
         
         .subtitle {
@@ -671,6 +789,34 @@
     <div class="bg-animation">
         <div class="grid"></div>
         <div class="particles"></div>
+        <div class="tesseract-container">
+            <div class="tesseract">
+                <div class="cube-outer">
+                    <div class="face face-front"></div>
+                    <div class="face face-back"></div>
+                    <div class="face face-right"></div>
+                    <div class="face face-left"></div>
+                    <div class="face face-top"></div>
+                    <div class="face face-bottom"></div>
+                    <div class="connector connector-1"></div>
+                    <div class="connector connector-2"></div>
+                    <div class="connector connector-3"></div>
+                    <div class="connector connector-4"></div>
+                    <div class="connector connector-5"></div>
+                    <div class="connector connector-6"></div>
+                    <div class="connector connector-7"></div>
+                    <div class="connector connector-8"></div>
+                </div>
+                <div class="cube-inner">
+                    <div class="face face-inner-front"></div>
+                    <div class="face face-inner-back"></div>
+                    <div class="face face-inner-right"></div>
+                    <div class="face face-inner-left"></div>
+                    <div class="face face-inner-top"></div>
+                    <div class="face face-inner-bottom"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <header>

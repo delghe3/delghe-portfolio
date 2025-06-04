@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delghe - Digital Wizard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --accent-primary: #00ff88;
+            --accent-secondary: #0080ff;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #606060;
+            --glow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,255,136,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0; }
+            50% { transform: translateY(-100px) translateX(50px); opacity: 1; }
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+        }
+        
+        .lang-button {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-button:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+        
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .lang-dropdown.show {
+            display: block;
+        }
+        
+        .lang-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+        }
+        
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+        
+        .lang-option:hover {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-primary);
+        }
+        
+        .lang-option.active {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+        
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '> ';
+            color: var(--accent-secondary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-primary);
+            text-shadow: var(--glow);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 2rem;
+        }
+        
+        /* Ermellino Animation */
+        .ermellino {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 60px;
+            height: 40px;
+            animation: ermellinoWalk 8s ease-in-out infinite;
+        }
+        
+        .ermellino-body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Corpo dell'ermellino */
+        .ermellino-body::before {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 20px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 50% 50% 45% 45%;
+            top: 12px;
+            left: 12px;
+            box-shadow: 
+                inset -2px -2px 4px rgba(0,0,0,0.1),
+                2px 2px 8px rgba(0,255,136,0.2);
+            animation: bodyBounce 0.8s ease-in-out infinite alternate;
+        }
+        
+        /* Testa */
+        .ermellino-body::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 16px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 60% 60% 50% 50%;
+            top: 8px;
+            left: 5px;
+            box-shadow: 
+                inset -1px -1px 3px rgba(0,0,0,0.1),
+                1px 1px 6px rgba(0,255,136,0.3);
+            animation: headBob 1.2s ease-in-out infinite;
+        }
+        
+        /* Occhi */
+        .ermellino-eyes {
+            position: absolute;
+            top: 12px;
+            left: 8px;
+            z-index: 2;
+        }
+        
+        .eye {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, #000 40%, #333 100%);
+            border-radius: 50%;
+            animation: eyeBlink 3s infinite;
+        }
+        
+        .eye.left {
+            left: 3px;
+        }
+        
+        .eye.right {
+            left: 9px;
+        }
+        
+        /* Coda */
+        .ermellino-tail {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            border-radius: 50%;
+            top: 16px;
+            right: 2px;
+            box-shadow: 1px 1px 4px rgba(0,255,136,0.2);
+            animation: tailWag 0.6s ease-in-out infinite alternate;
+        }
+        
+        /* Zampe */
+        .ermellino-legs {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .leg {
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: linear-gradient(180deg, #ffffff, #e0e0e0);
+            border-radius: 1px;
+            animation: legWalk 0.8s ease-in-out infinite;
+        }
+        
+        .leg.front-left {
+            left: -8px;
+            animation-delay: 0s;
+        }
+        
+        .leg.front-right {
+            left: -2px;
+            animation-delay: 0.4s;
+        }
+        
+        .leg.back-left {
+            left: 2px;
+            animation-delay: 0.2s;
+        }
+        
+        .leg.back-right {
+            left: 8px;
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes ermellinoWalk {
+            0%, 100% { 
+                transform: translateX(-250px) scaleX(1);
+            }
+            25% {
+                transform: translateX(-120px) scaleX(1);
+            }
+            50% { 
+                transform: translateX(120px) scaleX(-1);
+            }
+            75% {
+                transform: translateX(-50px) scaleX(-1);
+            }
+        }
+        
+        @keyframes bodyBounce {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-2px); }
+        }
+        
+        @keyframes headBob {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-1px) rotate(2deg); }
+        }
+        
+        @keyframes eyeBlink {
+            0%, 94%, 100% { transform: scaleY(1); }
+            97% { transform: scaleY(0.1); }
+        }
+        
+        @keyframes tailWag {
+            0% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
+        }
+        
+        @keyframes legWalk {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-style: italic;
+            font-size: clamp(1rem, 4vw, 1.8rem);
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .subtitle-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-style: italic;
+            color: var(--accent-secondary);
+        }
+        
+        .subtitle-cursor {
+            display: inline-block;
+            background-color: var(--accent-secondary);
+            width: 3px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: 2px solid var(--accent-primary);
+            background: transparent;
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: var(--glow);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            border-color: var(--accent-secondary);
+            color: var(--accent-secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent-secondary);
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.3);
+        }
+        
+        /* Sections */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--accent-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .section-title::before {
+            content: '// ';
+            color: var(--text-tertiary);
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tag {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Terminal Section */
+        .terminal {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 3rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .terminal-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .red { background: #ff5f57; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #28ca42; }
+        
+        .terminal-title {
+            margin-left: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .terminal-content {
+            color: var(--accent-primary);
+        }
+        
+        .prompt {
+            color: var(--accent-secondary);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .social-links a {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--accent-primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright-notice {
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            text-align: left;
+        }
+        
+        .copyright-notice p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .copyright-notice strong {
+            color: var(--accent-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Scroll animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="grid"></div>
+        <div class="particles"></div>
+    </div>
+
+    <header>
+        <nav>
+            <a href="#" class="logo">delghe</a>
+            <ul class="nav-links">
+                <li><a href="#progetti" data-it="Progetti" data-en="Projects" data-de="Projekte" data-fr="Projets" data-es="Proyectos">Progetti</a></li>
+                <li><a href="#scritti" data-it="Scritti" data-en="Writings" data-de="Schriften" data-fr="Écrits" data-es="Escritos">Scritti</a></li>
+                <li><a href="#contatti" data-it="Contatti" data-en="Contacts" data-de="Kontakte" data-fr="Contacts" data-es="Contactos">Contatti</a></li>
+            </ul>
+            <div class="language-selector">
+                <button class="lang-button" id="currentLang">🇮🇹 IT</button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option active" data-lang="it" data-flag="🇮🇹">Italiano</div>
+                    <div class="lang-option" data-lang="en" data-flag="🇺🇸">English</div>
+                    <div class="lang-option" data-lang="de" data-flag="🇩🇪">Deutsch</div>
+                    <div class="lang-option" data-lang="fr" data-flag="🇫🇷">Français</div>
+                    <div class="lang-option" data-lang="es" data-flag="🇪🇸">Español</div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="ermellino">
+                    <div class="ermellino-body">
+                        <div class="ermellino-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="ermellino-tail"></div>
+                        <div class="ermellino-legs">
+                            <div class="leg front-left"></div>
+                            <div class="leg front-right"></div>
+                            <div class="leg back-left"></div>
+                            <div class="leg back-right"></div>
+                        </div>
+                    </div>
+                </div>
+                <h1>DELGHE</h1>
+                <div class="subtitle">
+                    <span class="subtitle-text" id="subtitle-text" data-it="Delghe Driven Revolution" data-en="Delghe Driven Revolution" data-de="Delghe Driven Revolution" data-fr="Delghe Driven Revolution" data-es="Delghe Driven Revolution"></span>
+                    <span class="subtitle-cursor">|</span>
+                </div>
+                <p class="hero-description" data-it="Delghe Driven Revolution è un contenitore nuovo di idee, scritti, programmi, progetti" data-en="Delghe Driven Revolution is a new container of ideas, writings, programs, projects" data-de="Delghe Driven Revolution ist ein neuer Behälter für Ideen, Schriften, Programme, Projekte" data-fr="Delghe Driven Revolution est un nouveau conteneur d'idées, d'écrits, de programmes, de projets" data-es="Delghe Driven Revolution es un nuevo contenedor de ideas, escritos, programas, proyectos">
+                    Delghe Driven Revolution è un contenitore nuovo di idee, scritti, programmi, progetti
+                </p>
+                <div class="cta-buttons">
+                    <a href="#progetti" class="btn" data-it="Esplora Progetti" data-en="Explore Projects" data-de="Projekte Erkunden" data-fr="Explorer Projets" data-es="Explorar Proyectos">Esplora Progetti</a>
+                    <a href="#scritti" class="btn btn-secondary" data-it="Leggi Scritti" data-en="Read Writings" data-de="Schriften Lesen" data-fr="Lire Écrits" data-es="Leer Escritos">Leggi Scritti</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="progetti">
+            <h2 class="section-title">Progetti</h2>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <div class="terminal-button red"></div>
+                        <div class="terminal-button yellow"></div>
+                        <div class="terminal-button green"></div>
+                    </div>
+                    <div class="terminal-title">delghe@workspace: ~/progetti</div>
+                </div>
+                <div class="terminal-content">
+                    <div><span class="prompt">$</span> ls -la progetti/</div>
+                    <div>total 42</div>
+                    <div>drwxr-xr-x  8 delghe delghe 4096 Jun  4 15:30 ./</div>
+                    <div>drwxr-xr-x  3 delghe delghe 4096 Jun  4 15:30 ../</div>
+                    <div>drwxr-xr-x  2 delghe delghe 4096 Jun  4 15:30 web-apps/</div>
+                    <div>drwxr-xr-x  2 delghe delghe 4096 Jun  4 15:30 tools/</div>
+                    <div>drwxr-xr-x  2 delghe delghe 4096 Jun  4 15:30 experiments/</div>
+                </div>
+            </div>
+            
+            <div class="cards-grid">
+                <!-- PROGETTI: Aggiungi qui sotto -->
+                <div class="card">
+                    <h3>Portfolio Dinamico</h3>
+                    <p>Un sistema modulare per gestire portfolio con animazioni avanzate e performance ottimizzate.</p>
+                    <div class="card-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">GSAP</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>AI Text Analyzer</h3>
+                    <p>Tool per l'analisi semantica di testi utilizzando modelli di machine learning personalizzati.</p>
+                    <div class="card-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">TensorFlow</span>
+                        <span class="tag">NLP</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Crypto Dashboard</h3>
+                    <p>Dashboard real-time per il monitoraggio di criptovalute con grafici interattivi e alert personalizzati.</p>
+                    <div class="card-tags">
+                        <span class="tag">Vue.js</span>
+                        <span class="tag">D3.js</span>
+                        <span class="tag">WebSocket</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="scritti">
+            <h2 class="section-title">Scritti</h2>
+            <div class="cards-grid">
+                <!-- SCRITTI: Aggiungi qui sotto -->
+                <div class="card">
+                    <h3>Filosofia del Codice</h3>
+                    <p>Riflessioni sul rapporto tra logica, creatività e bellezza nella programmazione. Come il codice diventa arte.</p>
+                    <div class="card-tags">
+                        <span class="tag">Filosofia</span>
+                        <span class="tag">Tech</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Il Futuro dell'AI</h3>
+                    <p>Analisi critica sull'evoluzione dell'intelligenza artificiale e il suo impatto sulla società contemporanea.</p>
+                    <div class="card-tags">
+                        <span class="tag">AI</span>
+                        <span class="tag">Futuro</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Minimalismo Digitale</h3>
+                    <p>Come applicare i principi del minimalismo al design di interfacce e all'architettura software.</p>
+                    <div class="card-tags">
+                        <span class="tag">Design</span>
+                        <span class="tag">UX</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contatti">
+        <div class="social-links">
+            <a href="#" title="GitHub">⚡</a>
+            <a href="#" title="LinkedIn">🔗</a>
+            <a href="#" title="Email">📧</a>
+            <a href="#" title="Twitter">🐦</a>
+        </div>
+        <div class="copyright-notice">
+            <p><strong data-it="AVVISO DI COPYRIGHT E LICENZA" data-en="COPYRIGHT AND LICENSE NOTICE" data-de="COPYRIGHT UND LIZENZ HINWEIS" data-fr="AVIS DE COPYRIGHT ET LICENCE" data-es="AVISO DE COPYRIGHT Y LICENCIA">AVVISO DI COPYRIGHT E LICENZA</strong></p>
+            <p data-it="© 2025 Delghe. Tutti i diritti riservati. Tutti i documenti, codici, scritti, progetti e contenuti presenti in questo sito sono protetti da copyright e licenza proprietaria." data-en="© 2025 Delghe. All rights reserved. All documents, codes, writings, projects and contents on this site are protected by copyright and proprietary license." data-de="© 2025 Delghe. Alle Rechte vorbehalten. Alle Dokumente, Codes, Schriften, Projekte und Inhalte auf dieser Website sind durch Urheberrecht und proprietäre Lizenz geschützt." data-fr="© 2025 Delghe. Tous droits réservés. Tous les documents, codes, écrits, projets et contenus de ce site sont protégés par copyright et licence propriétaire." data-es="© 2025 Delghe. Todos los derechos reservados. Todos los documentos, códigos, escritos, proyectos y contenidos de este sitio están protegidos por copyright y licencia propietaria.">© 2025 Delghe. Tutti i diritti riservati. Tutti i documenti, codici, scritti, progetti e contenuti presenti in questo sito sono protetti da copyright e licenza proprietaria.</p>
+            <p data-it="L'utilizzo è consentito esclusivamente per scopi personali e non commerciali. È vietata la riproduzione, distribuzione, modifica o utilizzo per altri fini senza autorizzazione scritta dell'autore." data-en="Use is permitted exclusively for personal and non-commercial purposes. Reproduction, distribution, modification or use for other purposes is prohibited without written authorization from the author." data-de="Die Nutzung ist ausschließlich für persönliche und nicht-kommerzielle Zwecke gestattet. Vervielfältigung, Verteilung, Änderung oder Nutzung für andere Zwecke ist ohne schriftliche Genehmigung des Autors verboten." data-fr="L'utilisation est autorisée exclusivement à des fins personnelles et non commerciales. La reproduction, distribution, modification ou utilisation à d'autres fins est interdite sans autorisation écrite de l'auteur." data-es="El uso está permitido exclusivamente para fines personales y no comerciales. Está prohibida la reproducción, distribución, modificación o uso para otros fines sin autorización escrita del autor.">L'utilizzo è consentito esclusivamente per scopi personali e non commerciali. È vietata la riproduzione, distribuzione, modifica o utilizzo per altri fini senza autorizzazione scritta dell'autore.</p>
+            <p data-it="Questo sito è protetto dalle leggi internazionali sul copyright (Convenzione di Berna, DMCA, Direttiva UE 2001/29/CE)." data-en="This site is protected by international copyright laws (Berne Convention, DMCA, EU Directive 2001/29/EC)." data-de="Diese Website ist durch internationale Urheberrechtsgesetze geschützt (Berner Übereinkunft, DMCA, EU-Richtlinie 2001/29/EG)." data-fr="Ce site est protégé par les lois internationales sur le droit d'auteur (Convention de Berne, DMCA, Directive UE 2001/29/CE)." data-es="Este sitio está protegido por las leyes internacionales de copyright (Convención de Berna, DMCA, Directiva UE 2001/29/CE).">Questo sito è protetto dalle leggi internazionali sul copyright (Convenzione di Berna, DMCA, Direttiva UE 2001/29/CE).</p>
+        </div>
+        <p style="margin-top: 2rem; font-family: 'JetBrains Mono', monospace; color: var(--accent-primary);" data-it="Codificato con ❤️ e ☕" data-en="Coded with ❤️ and ☕" data-de="Programmiert mit ❤️ und ☕" data-fr="Codé avec ❤️ et ☕" data-es="Codificado con ❤️ y ☕">Codificato con ❤️ e ☕</p>
+    </footer>
+
+    <script>
+        // Language system
+        const translations = {
+            it: {
+                subtitle: 'Delghe Driven Revolution'
+            },
+            en: {
+                subtitle: 'Delghe Driven Revolution'
+            },
+            de: {
+                subtitle: 'Delghe Driven Revolution'
+            },
+            fr: {
+                subtitle: 'Delghe Driven Revolution'
+            },
+            es: {
+                subtitle: 'Delghe Driven Revolution'
+            }
+        };
+        
+        let currentLang = 'it';
+        let currentSubtitle = translations[currentLang].subtitle;
+        
+        // Language selector functionality
+        document.getElementById('currentLang').addEventListener('click', function() {
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const langSelector = document.querySelector('.language-selector');
+            if (!langSelector.contains(event.target)) {
+                document.getElementById('langDropdown').classList.remove('show');
+            }
+        });
+        
+        // Language option selection
+        document.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                const flag = this.getAttribute('data-flag');
+                const langName = this.textContent;
+                
+                // Update current language button
+                document.getElementById('currentLang').innerHTML = `${flag} ${lang.toUpperCase()}`;
+                
+                // Update active option
+                document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Change language
+                changeLanguage(lang);
+                
+                // Close dropdown
+                document.getElementById('langDropdown').classList.remove('show');
+            });
+        });
+        
+        function changeLanguage(lang) {
+            currentLang = lang;
+            currentSubtitle = translations[currentLang].subtitle;
+            
+            // Reset subtitle typing animation
+            subtitleCharIndex = 0;
+            subtitleIsDeleting = false;
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-' + lang + ']').forEach(element => {
+                const translation = element.getAttribute('data-' + lang);
+                if (translation) {
+                    element.textContent = translation;
+                }
+            });
+        }
+        
+        // Subtitle typing animation
+        const subtitleText = document.getElementById('subtitle-text');
+        let subtitleCharIndex = 0;
+        let subtitleIsDeleting = false;
+        
+        function typeSubtitle() {
+            if (subtitleIsDeleting) {
+                subtitleText.textContent = currentSubtitle.substring(0, subtitleCharIndex - 1);
+                subtitleCharIndex--;
+            } else {
+                subtitleText.textContent = currentSubtitle.substring(0, subtitleCharIndex + 1);
+                subtitleCharIndex++;
+            }
+            
+            let typeSpeed = subtitleIsDeleting ? 50 : 100;
+            
+            if (!subtitleIsDeleting && subtitleCharIndex === currentSubtitle.length) {
+                typeSpeed = 3000; // Pause when complete
+                subtitleIsDeleting = true;
+            } else if (subtitleIsDeleting && subtitleCharIndex === 0) {
+                subtitleIsDeleting = false;
+                typeSpeed = 1000; // Pause before retyping
+            }
+            
+            setTimeout(typeSubtitle, typeSpeed);
+        }
+        
+        // Start subtitle typing animation
+        typeSubtitle();
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Initialize particles
+        createParticles();
+        
+        // Add fade-in animation to cards when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
